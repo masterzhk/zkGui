@@ -23,6 +23,19 @@ namespace zkGui
             InitializeComponent();
         }
 
+        private void Log(string message)
+        {
+            textBoxLog.Invoke(new Action(() =>
+            {
+                textBoxLog.AppendText($"{DateTime.Now.ToString()} : {message}\r\n");
+            }));
+        }
+
+        private string Combine(string parentPath, string childPath)
+        {
+            return $"{parentPath.TrimEnd('/')}/{childPath.TrimStart('/')}";
+        }
+
         private async void buttonConnect_Click(object sender, EventArgs e)
         {
             lock (m_zooKeeperClientLocker)
@@ -65,13 +78,14 @@ namespace zkGui
                 m_zooKeeperClient = null;
                 buttonConnect.BackColor = SystemColors.Control;
                 buttonConnect.Text = "Connect";
+                treeViewNodes.Nodes.Clear();
             }
         }
 
         private async void M_stateWatcher_OnEvent(WatchedEvent obj)
         {
             Color color = Color.Gray;
-
+            Log(obj.getState().ToString());
             switch (obj.getState())
             {
                 case Watcher.Event.KeeperState.ConnectedReadOnly:
@@ -98,19 +112,30 @@ namespace zkGui
 
         private async Task LoadTree(TreeNode parentTreeNode, string parentPath, string childPath)
         {
+            string childAbsolutePath = String.Empty;
+
             try
             {
-                var childAbsolutePath = $"{parentPath.TrimEnd('/')}/{childPath.TrimStart('/')}";
+                childAbsolutePath = Combine(parentPath, childPath);
                 if (parentTreeNode == null)
                 {
-                    treeViewNodes.Invoke(new Action(() => parentTreeNode = treeViewNodes.Nodes.Add(childPath)));
+
+                    treeViewNodes.Invoke(new Action(() =>
+                    {
+                        treeViewNodes.Nodes.Clear();
+                        parentTreeNode = treeViewNodes.Nodes.Add(childAbsolutePath, childPath);
+                    }));
                 }
                 var children = await m_zooKeeperClient.getChildrenAsync(childAbsolutePath);
                 foreach (var child in children.Children)
                 {
-                    var childTreeNode = parentTreeNode.Nodes.Add(child);
+                    var childTreeNode = parentTreeNode.Nodes.Add(Combine(childAbsolutePath, child), child);
                     await LoadTree(childTreeNode, childAbsolutePath, child);
                 }
+            }
+            catch (KeeperException ex)
+            {
+                Log($"{ex.Message} {childAbsolutePath}");
             }
             catch (Exception ex)
             {
@@ -123,8 +148,9 @@ namespace zkGui
             switch (e.KeyData)
             {
                 case Keys.F5:
-                    treeViewNodes.Nodes.Clear();
+                    var selectedNode = treeViewNodes.SelectedNode;
                     await LoadTree(null, "/", "/");
+                    treeViewNodes.SelectedNode = treeViewNodes.Nodes.Find(selectedNode.Name, true).FirstOrDefault();
                     break;
             }
         }
@@ -146,6 +172,14 @@ namespace zkGui
                         m_zooKeeperClient.addAuthInfo(authInfoForm.Scheme, authInfoForm.Auth);
                     }
                 }
+            }
+        }
+
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (m_zooKeeperClient != null)
+            {
+                await m_zooKeeperClient?.closeAsync();
             }
         }
     }

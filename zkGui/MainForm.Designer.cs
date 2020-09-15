@@ -35,6 +35,7 @@
             this.textBoxSessionTimeout = new System.Windows.Forms.TextBox();
             this.treeViewNodes = new System.Windows.Forms.TreeView();
             this.buttonAddAuth = new System.Windows.Forms.Button();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // labelConnectstring
@@ -86,7 +87,7 @@
             // 
             this.treeViewNodes.Location = new System.Drawing.Point(12, 61);
             this.treeViewNodes.Name = "treeViewNodes";
-            this.treeViewNodes.Size = new System.Drawing.Size(776, 377);
+            this.treeViewNodes.Size = new System.Drawing.Size(776, 272);
             this.treeViewNodes.TabIndex = 5;
             this.treeViewNodes.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeViewNodes_KeyUp);
             // 
@@ -100,11 +101,20 @@
             this.buttonAddAuth.UseVisualStyleBackColor = true;
             this.buttonAddAuth.Click += new System.EventHandler(this.buttonAddAuth_Click);
             // 
+            // textBoxLog
+            // 
+            this.textBoxLog.Location = new System.Drawing.Point(12, 339);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.Size = new System.Drawing.Size(776, 99);
+            this.textBoxLog.TabIndex = 7;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.buttonAddAuth);
             this.Controls.Add(this.treeViewNodes);
             this.Controls.Add(this.textBoxSessionTimeout);
@@ -117,6 +127,7 @@
             this.MinimumSize = new System.Drawing.Size(816, 489);
             this.Name = "MainForm";
             this.Text = "zkGui";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -131,6 +142,7 @@
         private System.Windows.Forms.TextBox textBoxSessionTimeout;
         private System.Windows.Forms.TreeView treeViewNodes;
         private System.Windows.Forms.Button buttonAddAuth;
+        private System.Windows.Forms.TextBox textBoxLog;
     }
 }
 
