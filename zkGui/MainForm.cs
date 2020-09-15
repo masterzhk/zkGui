@@ -128,5 +128,25 @@ namespace zkGui
                     break;
             }
         }
+
+        private void buttonAddAuth_Click(object sender, EventArgs e)
+        {
+            lock (m_zooKeeperClientLocker)
+            {
+                if (m_zooKeeperClient == null)
+                {
+                    MessageBox.Show("未连接", "提示");
+                }
+                else
+                {
+                    AuthInfoForm authInfoForm = new AuthInfoForm();
+                    var dialogResult = authInfoForm.ShowDialog();
+                    if (dialogResult == DialogResult.OK)
+                    {
+                        m_zooKeeperClient.addAuthInfo(authInfoForm.Scheme, authInfoForm.Auth);
+                    }
+                }
+            }
+        }
     }
 }

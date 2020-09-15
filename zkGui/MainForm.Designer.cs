@@ -34,6 +34,7 @@
             this.labelSessionTimeout = new System.Windows.Forms.Label();
             this.textBoxSessionTimeout = new System.Windows.Forms.TextBox();
             this.treeViewNodes = new System.Windows.Forms.TreeView();
+            this.buttonAddAuth = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // labelConnectstring
@@ -77,7 +78,7 @@
             // 
             this.textBoxSessionTimeout.Location = new System.Drawing.Point(150, 33);
             this.textBoxSessionTimeout.Name = "textBoxSessionTimeout";
-            this.textBoxSessionTimeout.Size = new System.Drawing.Size(560, 21);
+            this.textBoxSessionTimeout.Size = new System.Drawing.Size(479, 21);
             this.textBoxSessionTimeout.TabIndex = 4;
             this.textBoxSessionTimeout.Text = "40000";
             // 
@@ -89,11 +90,22 @@
             this.treeViewNodes.TabIndex = 5;
             this.treeViewNodes.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeViewNodes_KeyUp);
             // 
+            // buttonAddAuth
+            // 
+            this.buttonAddAuth.Location = new System.Drawing.Point(635, 32);
+            this.buttonAddAuth.Name = "buttonAddAuth";
+            this.buttonAddAuth.Size = new System.Drawing.Size(75, 23);
+            this.buttonAddAuth.TabIndex = 6;
+            this.buttonAddAuth.Text = "AddAuth";
+            this.buttonAddAuth.UseVisualStyleBackColor = true;
+            this.buttonAddAuth.Click += new System.EventHandler(this.buttonAddAuth_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.buttonAddAuth);
             this.Controls.Add(this.treeViewNodes);
             this.Controls.Add(this.textBoxSessionTimeout);
             this.Controls.Add(this.labelSessionTimeout);
@@ -118,6 +130,7 @@
         private System.Windows.Forms.Label labelSessionTimeout;
         private System.Windows.Forms.TextBox textBoxSessionTimeout;
         private System.Windows.Forms.TreeView treeViewNodes;
+        private System.Windows.Forms.Button buttonAddAuth;
     }
 }
 
