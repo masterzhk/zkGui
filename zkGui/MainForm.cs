@@ -128,12 +128,5 @@ namespace zkGui
                     break;
             }
         }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            SetStyle(ControlStyles.UserPaint, true);
-            SetStyle(ControlStyles.AllPaintingInWmPaint, true); // 禁止擦除背景.
-            SetStyle(ControlStyles.DoubleBuffer, true); // 双缓冲
-        }
     }
 }
