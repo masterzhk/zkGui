@@ -36,6 +36,11 @@ namespace zkGui
             return $"{parentPath.TrimEnd('/')}/{childPath.TrimStart('/')}";
         }
 
+        private void SelecteNode(string name)
+        {
+            treeViewNodes.SelectedNode = treeViewNodes.Nodes.Find(name, true).FirstOrDefault();
+        }
+
         private async void buttonConnect_Click(object sender, EventArgs e)
         {
             lock (m_zooKeeperClientLocker)
@@ -150,7 +155,7 @@ namespace zkGui
                 case Keys.F5:
                     var selectedNode = treeViewNodes.SelectedNode;
                     await LoadTree(null, "/", "/");
-                    treeViewNodes.SelectedNode = treeViewNodes.Nodes.Find(selectedNode.Name, true).FirstOrDefault();
+                    SelecteNode(selectedNode.Name);
                     break;
             }
         }
@@ -180,6 +185,32 @@ namespace zkGui
             if (m_zooKeeperClient != null)
             {
                 await m_zooKeeperClient?.closeAsync();
+            }
+        }
+
+        private async void buttonDelete_Click(object sender, EventArgs e)
+        {
+            var selectedNode = treeViewNodes.SelectedNode;
+            if (selectedNode != null)
+            {
+                try
+                {
+                    await m_zooKeeperClient.deleteAsync(selectedNode.Name);
+                    SelecteNode(selectedNode.Parent.Name);
+                    selectedNode.Parent?.Nodes.Remove(selectedNode);
+                }
+                catch (KeeperException ex)
+                {
+                    Log($"{ex.Message} {selectedNode.Name}");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "删除节点异常");
+                }
+            }
+            else
+            {
+                MessageBox.Show("未选择节点", "提示");
             }
         }
     }
