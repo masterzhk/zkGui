@@ -38,6 +38,8 @@
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.groupBoxConnection = new System.Windows.Forms.GroupBox();
             this.groupBoxNodes = new System.Windows.Forms.GroupBox();
+            this.buttonInfo = new System.Windows.Forms.Button();
+            this.buttonCreate = new System.Windows.Forms.Button();
             this.buttonDelete = new System.Windows.Forms.Button();
             this.groupBoxLog = new System.Windows.Forms.GroupBox();
             this.groupBoxConnection.SuspendLayout();
@@ -92,6 +94,7 @@
             // 
             // treeViewNodes
             // 
+            this.treeViewNodes.HideSelection = false;
             this.treeViewNodes.Location = new System.Drawing.Point(6, 49);
             this.treeViewNodes.Name = "treeViewNodes";
             this.treeViewNodes.Size = new System.Drawing.Size(764, 148);
@@ -113,6 +116,7 @@
             this.textBoxLog.Location = new System.Drawing.Point(8, 20);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBoxLog.Size = new System.Drawing.Size(762, 114);
             this.textBoxLog.TabIndex = 7;
             // 
@@ -133,6 +137,8 @@
             // 
             // groupBoxNodes
             // 
+            this.groupBoxNodes.Controls.Add(this.buttonInfo);
+            this.groupBoxNodes.Controls.Add(this.buttonCreate);
             this.groupBoxNodes.Controls.Add(this.buttonDelete);
             this.groupBoxNodes.Controls.Add(this.treeViewNodes);
             this.groupBoxNodes.Location = new System.Drawing.Point(12, 90);
@@ -142,9 +148,29 @@
             this.groupBoxNodes.TabStop = false;
             this.groupBoxNodes.Text = "节点管理";
             // 
+            // buttonInfo
+            // 
+            this.buttonInfo.Location = new System.Drawing.Point(168, 20);
+            this.buttonInfo.Name = "buttonInfo";
+            this.buttonInfo.Size = new System.Drawing.Size(75, 23);
+            this.buttonInfo.TabIndex = 8;
+            this.buttonInfo.Text = "Info";
+            this.buttonInfo.UseVisualStyleBackColor = true;
+            this.buttonInfo.Click += new System.EventHandler(this.buttonInfo_Click);
+            // 
+            // buttonCreate
+            // 
+            this.buttonCreate.Location = new System.Drawing.Point(6, 20);
+            this.buttonCreate.Name = "buttonCreate";
+            this.buttonCreate.Size = new System.Drawing.Size(75, 23);
+            this.buttonCreate.TabIndex = 7;
+            this.buttonCreate.Text = "Create";
+            this.buttonCreate.UseVisualStyleBackColor = true;
+            this.buttonCreate.Click += new System.EventHandler(this.buttonCreate_Click);
+            // 
             // buttonDelete
             // 
-            this.buttonDelete.Location = new System.Drawing.Point(6, 20);
+            this.buttonDelete.Location = new System.Drawing.Point(87, 20);
             this.buttonDelete.Name = "buttonDelete";
             this.buttonDelete.Size = new System.Drawing.Size(75, 23);
             this.buttonDelete.TabIndex = 6;
@@ -199,6 +225,8 @@
         private System.Windows.Forms.GroupBox groupBoxNodes;
         private System.Windows.Forms.Button buttonDelete;
         private System.Windows.Forms.GroupBox groupBoxLog;
+        private System.Windows.Forms.Button buttonCreate;
+        private System.Windows.Forms.Button buttonInfo;
     }
 }
 
