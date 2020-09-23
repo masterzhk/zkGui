@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.labelNodeName = new System.Windows.Forms.Label();
@@ -54,12 +55,15 @@
             this.tabPageOther = new System.Windows.Forms.TabPage();
             this.labelCreateMode = new System.Windows.Forms.Label();
             this.comboBoxCreateMode = new System.Windows.Forms.ComboBox();
+            this.contextMenuStripAcl = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ToolStripMenuItemDigestHelper = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.tabPageData.SuspendLayout();
             this.tabPageAcl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAcls)).BeginInit();
             this.tabPageStat.SuspendLayout();
             this.tabPageOther.SuspendLayout();
+            this.contextMenuStripAcl.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -184,6 +188,7 @@
             this.ColumnPermCreate,
             this.ColumnPermDelete,
             this.ColumnPermAdmin});
+            this.dataGridViewAcls.ContextMenuStrip = this.contextMenuStripAcl;
             this.dataGridViewAcls.Location = new System.Drawing.Point(6, 6);
             this.dataGridViewAcls.Name = "dataGridViewAcls";
             this.dataGridViewAcls.RowTemplate.Height = 23;
@@ -325,6 +330,20 @@
             this.comboBoxCreateMode.TabIndex = 0;
             this.comboBoxCreateMode.Text = "PERSISTENT";
             // 
+            // contextMenuStripAcl
+            // 
+            this.contextMenuStripAcl.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItemDigestHelper});
+            this.contextMenuStripAcl.Name = "contextMenuStripAcl";
+            this.contextMenuStripAcl.Size = new System.Drawing.Size(157, 26);
+            // 
+            // ToolStripMenuItemDigestHelper
+            // 
+            this.ToolStripMenuItemDigestHelper.Name = "ToolStripMenuItemDigestHelper";
+            this.ToolStripMenuItemDigestHelper.Size = new System.Drawing.Size(156, 22);
+            this.ToolStripMenuItemDigestHelper.Text = "Digest Helper";
+            this.ToolStripMenuItemDigestHelper.Click += new System.EventHandler(this.ToolStripMenuItemDigestHelper_Click);
+            // 
             // NodeInfoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -347,6 +366,7 @@
             this.tabPageStat.PerformLayout();
             this.tabPageOther.ResumeLayout(false);
             this.tabPageOther.PerformLayout();
+            this.contextMenuStripAcl.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -379,5 +399,7 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn ColumnPermCreate;
         private System.Windows.Forms.DataGridViewCheckBoxColumn ColumnPermDelete;
         private System.Windows.Forms.DataGridViewCheckBoxColumn ColumnPermAdmin;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripAcl;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemDigestHelper;
     }
 }

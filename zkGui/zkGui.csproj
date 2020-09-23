@@ -52,6 +52,12 @@
     <Compile Include="AuthInfoForm.Designer.cs">
       <DependentUpon>AuthInfoForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DigestHelperForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DigestHelperForm.Designer.cs">
+      <DependentUpon>DigestHelperForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,6 +75,9 @@
     <Compile Include="StateWatcher.cs" />
     <EmbeddedResource Include="AuthInfoForm.resx">
       <DependentUpon>AuthInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DigestHelperForm.resx">
+      <DependentUpon>DigestHelperForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
