@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +23,64 @@ namespace zkGui
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                var filePath = GetConfigFilePath();
+                if (File.Exists(filePath))
+                {
+                    var appConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(filePath));
+                    if (appConfig != null)
+                    {
+                        textBoxConnectstring.Text = appConfig.Connectstring;
+                        textBoxSessionTimeout.Text = appConfig.SessionTimeout.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ex.Message);
+            }
+        }
+
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                var filePath = GetConfigFilePath();
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                Int32.TryParse(textBoxSessionTimeout.Text, out int sessionTimeOut);
+
+                File.WriteAllText(filePath, Newtonsoft.Json.JsonConvert.SerializeObject(new AppConfig()
+                {
+                    Connectstring = textBoxConnectstring.Text,
+                    SessionTimeout = sessionTimeOut,
+                }));
+            }
+            catch (Exception ex)
+            {
+                Log(ex.Message);
+            }
+
+            if (m_zooKeeperClient != null)
+            {
+                try
+                {
+                    await m_zooKeeperClient.closeAsync();
+                }
+                catch (Exception ex)
+                {
+                    Log(ex.Message); // 这里记录了也没用^_^
+                }
+            }
+        }
+
+        private string GetConfigFilePath()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create), Text, "appconfig.json");
         }
 
         private void Log(string message)
@@ -59,6 +119,7 @@ namespace zkGui
                         m_stateWatcher = new StateWatcher();
                         m_stateWatcher.OnEvent += M_stateWatcher_OnEvent;
                         m_zooKeeperClient = new ZooKeeper(connectstring, sessionTimeout, m_stateWatcher);
+                        Log("Connecting...");
                         buttonConnect.Text = "Disconnect";
                         m_closing = false;
                     }
@@ -66,7 +127,7 @@ namespace zkGui
                     {
                         if (m_closing)
                         {
-                            MessageBox.Show("正在关闭", "提示");
+                            MessageBox.Show("Disconnecting...", "Info");
                             return;
                         }
                         else
@@ -77,7 +138,7 @@ namespace zkGui
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "异常");
+                    MessageBox.Show(ex.Message, "Error");
                 }
             }
 
@@ -86,12 +147,15 @@ namespace zkGui
                 m_stateWatcher.OnEvent -= M_stateWatcher_OnEvent;
                 try
                 {
+                    Log("Disconnecting...");
                     await m_zooKeeperClient.closeAsync();
+                    Log("Disconnected.");
                 }
                 catch (KeeperException ex)
                 {
                     Log(ex.Message);
                 }
+                Log("Disconnected.");
                 m_zooKeeperClient = null;
                 buttonConnect.BackColor = SystemColors.Control;
                 buttonConnect.Text = "Connect";
@@ -148,7 +212,7 @@ namespace zkGui
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "树加载异常");
+                MessageBox.Show(ex.Message, "Error");
             }
         }
 
@@ -157,6 +221,11 @@ namespace zkGui
             switch (e.KeyData)
             {
                 case Keys.F5:
+                    if (m_zooKeeperClient == null)
+                    {
+                        MessageBox.Show("No Connection.", "Info");
+                        break;
+                    }
                     var selectedNode = treeViewNodes.SelectedNode;
                     if (selectedNode == null)
                     {
@@ -168,6 +237,7 @@ namespace zkGui
                         selectedNode.Nodes.Clear();
                         await LoadTree(selectedNode);
                     }
+                    Log("Refreshed.");
                     break;
             }
         }
@@ -178,7 +248,7 @@ namespace zkGui
             {
                 if (m_zooKeeperClient == null)
                 {
-                    MessageBox.Show("未连接", "提示");
+                    MessageBox.Show("No Connection.", "Info");
                 }
                 else
                 {
@@ -189,6 +259,7 @@ namespace zkGui
                         try
                         {
                             m_zooKeeperClient.addAuthInfo(authInfoForm.Scheme, authInfoForm.Auth);
+                            Log("Auth Added.");
                         }
                         catch (KeeperException ex)
                         {
@@ -199,23 +270,14 @@ namespace zkGui
             }
         }
 
-        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (m_zooKeeperClient != null)
-            {
-                try
-                {
-                    await m_zooKeeperClient.closeAsync();
-                }
-                catch (KeeperException ex)
-                {
-                    Log(ex.Message);
-                }
-            }
-        }
-
         private async void buttonCreate_Click(object sender, EventArgs e)
         {
+            if (m_zooKeeperClient == null)
+            {
+                MessageBox.Show("No Connection.", "Info");
+                return;
+            }
+
             var selectedNode = treeViewNodes.SelectedNode;
             if (selectedNode != null)
             {
@@ -224,7 +286,7 @@ namespace zkGui
                 nodeInfoForm.Text = "NewNode";
                 nodeInfoForm.ACLs = new List<org.apache.zookeeper.data.ACL>() { new org.apache.zookeeper.data.ACL(31, new org.apache.zookeeper.data.Id("world", "anyone")) };
                 nodeInfoForm.ShowDialog();
-                if (MessageBox.Show($"确认添加节点{nodeInfoForm.NodeName}？", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show($"Are You Sure To Add {nodeInfoForm.NodeName}？", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     try
                     {
@@ -232,7 +294,7 @@ namespace zkGui
                         var acls = nodeInfoForm.ACLs;
                         string path = await m_zooKeeperClient.createAsync(Combine(selectedNode.Name, nodeInfoForm.NodeName), data, acls, nodeInfoForm.CreateMode);
                         selectedNode.Nodes.Add(path, GetNodeName(path));
-                        Log($"添加成功 {path}");
+                        Log($"Added {path}.");
                     }
                     catch (KeeperException ex)
                     {
@@ -240,13 +302,13 @@ namespace zkGui
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "添加节点异常");
+                        MessageBox.Show(ex.Message, "Error");
                     }
                 }
             }
             else
             {
-                MessageBox.Show("未选择节点", "提示");
+                MessageBox.Show("No Node Selected.", "Info");
             }
         }
 
@@ -255,14 +317,14 @@ namespace zkGui
             var selectedNode = treeViewNodes.SelectedNode;
             if (selectedNode != null)
             {
-                if (MessageBox.Show($"确认删除节点{selectedNode.Text}？", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show($"Are You Sure To Delete {selectedNode.Text}？", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     try
                     {
                         await m_zooKeeperClient.deleteAsync(selectedNode.Name);
                         SelecteNode(selectedNode.Parent.Name);
                         selectedNode.Parent?.Nodes.Remove(selectedNode);
-                        Log($"删除成功 {selectedNode.Name}");
+                        Log($"Deleted {selectedNode.Name}.");
                     }
                     catch (KeeperException ex)
                     {
@@ -270,13 +332,13 @@ namespace zkGui
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "删除节点异常");
+                        MessageBox.Show(ex.Message, "Error");
                     }
                 }
             }
             else
             {
-                MessageBox.Show("未选择节点", "提示");
+                MessageBox.Show("No Node Selected.", "Info");
             }
         }
 
@@ -313,18 +375,18 @@ namespace zkGui
 
                     if (dataChanged || aclsChanged)
                     {
-                        if (MessageBox.Show("是否要更新修改到zookeeper服务", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        if (MessageBox.Show("Do You Want To Update The Modification", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
                         {
                             if (dataChanged)
                             {
                                 await m_zooKeeperClient.setDataAsync(selectedNode.Name, data);
-                                Log($"Data更新成功 {selectedNode.Name}");
+                                Log($"Data Seted {selectedNode.Name}.");
                             }
 
                             if (aclsChanged)
                             {
                                 await m_zooKeeperClient.setACLAsync(selectedNode.Name, acls);
-                                Log($"Acls更新成功 {selectedNode.Name}");
+                                Log($"ACL Seted {selectedNode.Name}.");
                             }
                         }
                     }
@@ -335,12 +397,40 @@ namespace zkGui
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "显示节点信息异常");
+                    MessageBox.Show(ex.Message, "Error");
                 }
             }
             else
             {
-                MessageBox.Show("未选择节点", "提示");
+                MessageBox.Show("No Node Selected.", "Info");
+            }
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            textBoxLog.Clear();
+        }
+
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            textBoxLog.Focus();
+            textBoxLog.SelectAll();
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            textBoxLog.Copy();
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.FileName = "zkGui.log";
+            openFileDialog.CheckFileExists = false;
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                File.AppendAllText(openFileDialog.FileName, textBoxLog.Text);
+                Process.Start(openFileDialog.FileName);
             }
         }
     }

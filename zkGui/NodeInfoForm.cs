@@ -188,7 +188,7 @@ namespace zkGui
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "数据异常");
+                MessageBox.Show(ex.Message, "Error");
             }
         }
 

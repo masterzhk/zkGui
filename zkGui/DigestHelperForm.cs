@@ -29,7 +29,7 @@ namespace zkGui
         private void buttonCopy_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(textBoxExpression.Text);
-            MessageBox.Show("已复制到粘贴板");
+            MessageBox.Show("Copied.");
         }
     }
 }
