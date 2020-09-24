@@ -191,5 +191,11 @@ namespace zkGui
                 MessageBox.Show(ex.Message, "数据异常");
             }
         }
+
+        private void ToolStripMenuItemDigestHelper_Click(object sender, EventArgs e)
+        {
+            DigestHelperForm digestHelperForm = new DigestHelperForm();
+            digestHelperForm.Show();
+        }
     }
 }
