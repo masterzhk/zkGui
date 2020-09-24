@@ -108,7 +108,11 @@ namespace zkGui
                 case Watcher.Event.KeeperState.ConnectedReadOnly:
                 case Watcher.Event.KeeperState.SyncConnected:
                     color = Color.Green;
-                    treeViewNodes.Invoke(new Action(async () => await LoadTree(null, "/", "/")));
+                    treeViewNodes.Invoke(new Action(async () =>
+                    {
+                        treeViewNodes.Nodes.Clear();
+                        await LoadTree(treeViewNodes.Nodes.Add("/", "/"));
+                    }));
                     break;
 
                 case Watcher.Event.KeeperState.Disconnected:
@@ -127,32 +131,20 @@ namespace zkGui
             buttonConnect.Invoke(new Action(() => { buttonConnect.BackColor = color; }));
         }
 
-        private async Task LoadTree(TreeNode parentTreeNode, string parentPath, string childPath)
+        private async Task LoadTree(TreeNode parentTreeNode)
         {
-            string childAbsolutePath = String.Empty;
-
             try
             {
-                childAbsolutePath = Combine(parentPath, childPath);
-                if (parentTreeNode == null)
-                {
-
-                    treeViewNodes.Invoke(new Action(() =>
-                    {
-                        treeViewNodes.Nodes.Clear();
-                        parentTreeNode = treeViewNodes.Nodes.Add(childAbsolutePath, childPath);
-                    }));
-                }
-                var children = await m_zooKeeperClient.getChildrenAsync(childAbsolutePath);
+                var children = await m_zooKeeperClient.getChildrenAsync(parentTreeNode.Name);
                 foreach (var child in children.Children)
                 {
-                    var childTreeNode = parentTreeNode.Nodes.Add(Combine(childAbsolutePath, child), child);
-                    await LoadTree(childTreeNode, childAbsolutePath, child);
+                    var childTreeNode = parentTreeNode.Nodes.Add(Combine(parentTreeNode.Name, child), child);
+                    await LoadTree(childTreeNode);
                 }
             }
             catch (KeeperException ex)
             {
-                Log($"{ex.Message} {childAbsolutePath}");
+                Log($"{ex.Message} {parentTreeNode.Name}");
             }
             catch (Exception ex)
             {
@@ -166,8 +158,16 @@ namespace zkGui
             {
                 case Keys.F5:
                     var selectedNode = treeViewNodes.SelectedNode;
-                    await LoadTree(null, "/", "/");
-                    SelecteNode(selectedNode.Name);
+                    if (selectedNode == null)
+                    {
+                        treeViewNodes.Nodes.Clear();
+                        await LoadTree(treeViewNodes.Nodes.Add("/", "/"));
+                    }
+                    else
+                    {
+                        selectedNode.Nodes.Clear();
+                        await LoadTree(selectedNode);
+                    }
                     break;
             }
         }
