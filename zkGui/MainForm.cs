@@ -354,7 +354,7 @@ namespace zkGui
                     NodeInfoForm nodeInfoForm = new NodeInfoForm();
                     nodeInfoForm.NodeName = selectedNode.Text;
                     nodeInfoForm.Text = selectedNode.Name;
-                    nodeInfoForm.Data = dataResult.Data;
+                    nodeInfoForm.Data = dataResult.Data ?? (new byte[0]);
                     nodeInfoForm.ACLs = aCLResult.Acls;
                     nodeInfoForm.Stat = aCLResult.Stat;
                     nodeInfoForm.ShowDialog();
@@ -362,7 +362,7 @@ namespace zkGui
                     bool dataChanged = true;
                     bool aclsChanged = true;
                     var data = nodeInfoForm.Data;
-                    if (Convert.ToBase64String(dataResult.Data) == Convert.ToBase64String(data))
+                    if (Convert.ToBase64String(dataResult.Data ?? (new byte[0])) == Convert.ToBase64String(data))
                     {
                         dataChanged = false;
                     }

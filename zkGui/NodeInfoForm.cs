@@ -44,6 +44,7 @@ namespace zkGui
             set
             {
                 m_Data = value;
+
                 switch (comboBoxFormat.Text)
                 {
                     case "Base64":
