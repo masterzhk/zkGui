@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zkGui", "zkGui\zkGui.csproj", "{397DC88A-1665-4149-A281-3401BD8939DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{397DC88A-1665-4149-A281-3401BD8939DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{397DC88A-1665-4149-A281-3401BD8939DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{397DC88A-1665-4149-A281-3401BD8939DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{397DC88A-1665-4149-A281-3401BD8939DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {36427479-7122-446E-B4E9-514FBBF9932B}
+	EndGlobalSection
+EndGlobal
